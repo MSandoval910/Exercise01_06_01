@@ -8,10 +8,12 @@
 */
 
 "use strict"
-
+// global variables
 var twentyNine = document.createDocumentFragment(); 
 var thirty = document.createDocumentFragment();
 var thirtyOne = document.createDocumentFragment();
+var formValidity = false;
+
 
 // function to turn off select list defaults
 
@@ -72,6 +74,28 @@ function autoCheckCustom() {
         document.getElementById("custom").checked = ""; 
     }
 }
+
+// function to copy delivery to billing address 
+function copyBillingAddress() {
+    var billingInputElements = document.querySelectorAll("#billingAddress input");
+    var deliveryInputElements = document.querySelectorAll("#deliveryAddress input");
+    // if check box checked - copy all fields 
+    if (document.getElementById("sameAddr").checked) {
+        for (var i = 0; i < billingInputElements.length; i++) {
+            deliveryInputElements[i+1].value = billingInputElements[i].value;
+        }
+        document.querySelector("#deliveryAddress select").value = document.querySelector("#billingAddress select").value;
+    }
+    // else not checked erase all fields
+    else {
+         for (var i = 0; i < billingInputElements.length; i++) {
+            deliveryInputElements[i+1].value = "";
+        }
+        document.querySelector("#deliveryAddress select").selectedIndex = -1; 
+ 
+    }
+}
+
 // functions to run on page load
 
 function setUpPage() {
@@ -79,6 +103,30 @@ function setUpPage() {
     setUpDays();
     createEventListeners();
 }
+
+// function to validate entire form 
+function validateForm (evt) {
+    if (evt.preventDefault)  {
+        evt.preventDefault();
+    }
+    else {
+        evt.returnValue = false;    
+    }
+    
+    if (formValidity === true) {
+        document.getElementById("errorText").innerHTML = "";
+        document.getElementById("errorText").style.display = "none";
+        document.getElementsByTagName("form")[0].submit();
+
+    }   
+     else  {
+        document.getElementById("errorText").innerHTML = "Please fix the indicated problems and then resubmit your order!";
+        document.getElementById("errorText").style.display = "block";
+        scroll(0,0);
+
+    }   
+}
+
 
 // function too create our event listeners 
 function createEventListeners() {
@@ -96,9 +144,21 @@ function createEventListeners() {
     }
  var messageBox = document.getElementById("customText");    
     if (messageBox.addEventListener) {
-    messageBox.addEventListener("change" , autoCheckCustom, false)
+    messageBox.addEventListener("change" , autoCheckCustom, false);
 }  else if (messageBox.attachEvent) {
-   messageBox.attachEvent("onchange" , autoCheckCustom) 
+   messageBox.attachEvent("onchange" , autoCheckCustom); 
+    }
+ var same = document.getElementById("sameAddr");    
+    if (same.addEventListener) {
+    same.addEventListener("change" , copyBillingAddress, false);
+}  else if (same.attachEvent) {
+   same.attachEvent("onchange" , copyBillingAddress);
+    }
+ var form = document.getElementsByTagName("form")[0];    
+    if (form.addEventListener) {
+    form.addEventListener("submit" , validateForm, false);
+}  else if (form.attachEvent) {
+   form.attachEvent("onsubmit" , validateForm);
     }
 }
 // enable load event handlers 
