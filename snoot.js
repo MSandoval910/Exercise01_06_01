@@ -13,7 +13,17 @@ var twentyNine = document.createDocumentFragment();
 var thirty = document.createDocumentFragment();
 var thirtyOne = document.createDocumentFragment();
 var formValidity = false;
-
+// a try and catch statement for practice and future reference!...
+// when a caught catches a error it wont read anymore of the code in the try statement and it will skip it and go on with other code.
+// keyword finally is always executed even if the code run or if it doesnt run the finally statement always runs
+// try is the possible error
+//try {
+//    alert("try")
+//}
+// 
+//catch(err){
+//    alert("caught: " + err);
+//}
 
 // function to turn off select list defaults
 
@@ -103,6 +113,45 @@ function setUpPage() {
     setUpDays();
     createEventListeners();
 }
+// function too validate address 
+function validateAddress(fieldsetId) {
+    var inputElements = document.querySelectorAll("#" + fieldsetId + " input");
+    var errorDiv = document.querySelectorAll("#" + fieldsetId + " .errorMessage")[0];
+    var fieldsetValidity = true;
+    var elementCount = inputElements.length;
+    var currentElement = null;
+    try {
+        // loop requires inputElements
+        for (var i = 0; i < elementCount; i++) {
+            currentElement = inputElements[i];
+            // test for blank
+            if (currentElement.value === "") {
+                debugger;currentElement.style.background = "rgb(255,233,233)";
+                fieldsetValidity = false;
+            }
+            else {
+                currentElement.style.background = "blue";
+            }
+        }
+        if (fieldsetValidity === false) {
+            if (fieldsetId === "billingAddress") {
+                throw "Please complete all billing address information";
+            }
+            else {
+              throw "Please complete all delivery address information";  
+            }
+        }
+        else {
+          errorDiv.style.display = "none";
+            errorDiv.innerHTML = "";
+        }
+}
+    catch(msg) {
+        errorDiv.style.display = "block";
+        errorDiv.innerHTML = msg;
+        formValidity = false;
+    }
+}
 
 // function to validate entire form 
 function validateForm (evt) {
@@ -112,6 +161,9 @@ function validateForm (evt) {
     else {
         evt.returnValue = false;    
     }
+    
+    validateAddress("billingAddress");
+    validateAddress("deliveryAddress");
     
     if (formValidity === true) {
         document.getElementById("errorText").innerHTML = "";
@@ -168,4 +220,11 @@ if (window.addEventListener) {
 }  else if (window.attachEvent) {
    window.attachEvent("onload" , setUpPage) 
     }
+
+
+
+
+
+
+
 
